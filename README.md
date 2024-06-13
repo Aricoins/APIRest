@@ -8,17 +8,19 @@
 **Objeto Usuario**:
 ```json
 {
-    "id": "type int not null (serializado)",
-    "username": "type string unique",
-    "email": "type string unique not null",
-    "first_name": "type string max 100",
-    "last_name": "type string max 100",
-    "imageUrl": "type string not null",
-    "skills": "type string max 500",
-    "description": "type string max 500",
-    "created_at": "type timestamp default current",
-    "updated_at": "type timestamp default current",
-    "onboarding_state": "type boolean default false"
+    "id": type int not null,(serializados)
+    "username": type string unique,
+    "email": type string unique not null,
+    "first_name": type string max 100,
+    "last_name": type string max 100,
+    "image_url": type string not null,
+    "skills": type string max 500,
+    "description": type string max 500,
+    "created_at": type timestamp default current,
+    "updated_at": type timestamp default current,
+    "onboarding_state": type boolean default false
+    "following_count": type int default 0,(añadido por consulta)
+    "followers_count": type int default 0,(añadido por consulta)
 }
 ```
 **Response**: Objeto **Usuario** creado. ✅
@@ -28,6 +30,9 @@
 
 ### 🔍 Devuelve un usuario por su ID
 **GET: /api/v1/users/:id**
+
+### 🔍 Devuelve un usuario por su nombre de usuario  
+**GET: /api/v1/users/user/:username**  
 
 ### ✏️ Actualiza un usuario por su ID
 **PUT: /api/v1/users/update/:id**
@@ -41,7 +46,7 @@
     "skills",
     "description",
     "onboarding_state",
-    "imageUrl"
+    "image_url",
 }
 ```
 **Response**: Objeto **Usuario** actualizado. ✅
@@ -57,14 +62,18 @@
 **Objeto Post**:
 ```json
 {
-    "id": "type int not null (serializado)",
-    "title": "type string max 100 not null",
-    "content": "type string not null",
-    "userId": "type string not null (referenciado)",
-    "imageUrl": "type string max 255",
-    "tags": "type string max 255 (tags separados por ',')",
-    "created_at": "type timestamp default current",
-    "updated_at": "type timestamp default current"
+    "id": type int not null,(serializados)
+    "title": type string max 100 not null,
+    "content": type string not null,
+    "user_id": type string not null,(referenciado)
+    "image_url": type string max 255,
+    "tags": type string max 255,(tags separados por ",")
+    "created_at": type timestamp default current,
+    "updated_at": type timestamp default current,
+    "autor_username": type string,(añadido por consulta)
+    "autor_first_name": type string,(añadido por consulta)
+    "autor_last_name": type string,(añadido por consulta)
+    "autor_image_url": type string,(añadido por consulta)
 }
 ```
 **Response**: Objeto **Post** creado. ✅
@@ -98,7 +107,7 @@
 {
     "title",
     "content",
-    "imageUrl",
+    "image_url",
     "tags"
 }
 ```
@@ -120,12 +129,12 @@
 **Objeto Comentario**:
 ```json
 {
-    "id": "type int not null (serializado)",
-    "content": "type string not null",
-    "userId": "type string not null (referenciado)",
-    "postId": "type int not null (referenciado)",
-    "created_at": "type timestamp default current",
-    "updated_at": "type timestamp default current"
+    "id": type int not null,(serializados)
+    "content": type string not null,
+    "user_id": type string not null,(referenciado)
+    "post_id": type int not null,(referenciado)
+    "created_at": type timestamp default current,
+    "updated_at": type timestamp default current
 }
 ```
 **Response**: Objeto **Comentario** creado. ✅
@@ -149,68 +158,31 @@
 
 ## 👥 CRUD de Seguidores
 
-#### Seguir a un usuario
-* **Método:** POST
-* **Endpoint:** `/api/v1/followers/follow`
-* **Cuerpo de la solicitud:**
-```json
-{
-    "follower_id": "ID del usuario que quiere seguir",
-    "followed_id": "ID del usuario a seguir"
-}
-```
-* **Respuesta:** Objeto que contiene la información de seguimiento en caso de éxito. En caso de error, devuelve un código de estado 500 y un mensaje de error.
+### ➕ Seguir a un usuario
+**POST: /api/v1/follow/:id**
 
-#### Dejar de seguir a un usuario
-* **Método:** POST
-* **Endpoint:** `/api/v1/followers/unfollow`
-* **Cuerpo de la solicitud:**
-```json
-{
-    "follower_id": "ID del usuario que quiere dejar de seguir",
-    "followed_id": "ID del usuario que se deja de seguir"
-}
-```
-* **Respuesta:** Objeto que contiene la información de dejar de seguir en caso de éxito. En caso de error, devuelve un código de estado 500 y un mensaje de error.
+**Response**: Usuario seguido. ✅
 
-#### Obtener los seguidores de un usuario
-* **Método:** GET
-* **Endpoint:** `/api/v1/followers/:id/followers`
-* **Parámetro de ruta:**
-```json
-{
-    "id": "ID del usuario"
-}
-```
-* **Respuesta:** Matriz que contiene la información de los seguidores del usuario en caso de éxito. En caso de error, devuelve un código de estado 500 y un mensaje de error.
+### ❌ Dejar de seguir a un usuario
+**DELETE: /api/v1/followers/unfollow/:id**
 
-#### Obtener a los usuarios que sigue un usuario
-* **Método:** GET
-* **Endpoint:** `/api/v1/followers/:id/following`
-* **Parámetro de ruta:**
-```json
-{
-    "id": "ID del usuario"
-}
-```
-* **Respuesta:** Matriz que contiene los usuarios seguidos por el usuario en caso de éxito. En caso de error, devuelve un código de estado 500 y un mensaje de error.
+**Response**: Usuario dejado de seguir. ✅
 
-#### Obtener las publicaciones de los usuarios seguidos
-* **Método:** GET
-* **Endpoint:** `/api/v1/followers/:id/followed_posts`
-* **Parámetro de ruta:**
-```json
-{
-    "id": "ID del usuario"
-}
-```
-* **Respuesta:** Matriz que contiene las publicaciones de los usuarios seguidos por el usuario en caso de éxito. En caso de error, devuelve un código de estado 500 y un mensaje de error.
 
-#### Obtener los usuarios más seguidos
-* **Método:** GET
-* **Endpoint:** `/api/v1/followers/top_followed`
-* **Respuesta:** Matriz que contiene información sobre los cinco usuarios más seguidos en caso de éxito. En caso de error, devuelve un código de estado 500 y un mensaje de error.
+### 🔍 Obtener a quienes sigue un usuario
+**GET: /api/v1/followers/:id/following**
 
+**Response**: Array de objetos **Usuarios** que el usuario especificado sigue. 📄
+
+### 🔍 Obtener los posts de los usuarios seguidos por un usuario
+**GET: /api/v1/following/posts/:id**
+
+**Response**: Array de objetos **Posts** de los usuarios seguidos por el usuario especificado. 📄
+
+### 🔝 Obtener los cinco usuarios más seguidos
+**GET: /api/v1/top-followed-users**
+
+**Response**: Array de los cinco objetos **Usuarios** más seguidos. 📄
 
 ## 🏷️ CRUD de Tags
 
@@ -222,3 +194,4 @@
 ## 🎣 Ruta Clerk Webhooks: /api/v1/webhooks
 
 ### 🎉 Webhooks para integración con Clerk
+
